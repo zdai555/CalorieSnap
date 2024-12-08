@@ -99,7 +99,6 @@ class EditProfileViewController: UIViewController {
               let favoriteFood = editProfileView.textFieldFavoriteFood.text, !favoriteFood.isEmpty else {
             self.showAlert(message: "Please enter all fields.")
             return
-            return
         }
 
         if let image = selectedImage {

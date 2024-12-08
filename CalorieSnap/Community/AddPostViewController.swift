@@ -76,7 +76,10 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     @objc func shareTapped() {
-        guard let image = imageView.image, let caption = captionField.text, !caption.isEmpty else { return }
+        guard let image = imageView.image, let caption = captionField.text, !caption.isEmpty else {
+            self.showAlert(message: "Please enter all fields.")
+            return
+        }
             
         let imageData = image.jpegData(compressionQuality: 0.8)
         let imageRef = storage.reference().child("post_images/\(UUID().uuidString).jpg")
@@ -153,5 +156,12 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
             imageView.image = image
         }
         picker.dismiss(animated: true)
+    }
+    
+    func showAlert(message: String) {
+        let alertController = UIAlertController(title: "Invalid Input", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
     }
 }
