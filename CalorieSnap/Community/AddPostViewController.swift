@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseStorage
+import FirebaseAuth
 
 class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -67,7 +68,7 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     @objc func shareTapped() {
         guard let image = imageView.image, let caption = captionField.text, !caption.isEmpty else { return }
-        
+            
         let imageData = image.jpegData(compressionQuality: 0.8)
         let imageRef = storage.reference().child("post_images/\(UUID().uuidString).jpg")
         
@@ -90,23 +91,59 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func savePost(imageUrl: String, caption: String) {
-        let postData: [String: Any] = [
-            "imageUrl": imageUrl,
-            "caption": caption,
-            "likes": 0,
-            "comments": [],
-            "timestamp": FieldValue.serverTimestamp()
-        ]
+        // Ensure the current user is logged in
+        guard let currentUserId = Auth.auth().currentUser?.uid else {
+            print("Error: User not logged in.")
+            shareButton.isEnabled = true
+            return
+        }
         
-        db.collection("posts").addDocument(data: postData) { [weak self] error in
+        // Fetch user profile from Firestore
+        db.collection("users").document(currentUserId).getDocument { [weak self] document, error in
+            guard let self = self else { return }
             if let error = error {
-                print("Error saving post: \(error)")
+                print("Error fetching profile: \(error)")
+                self.shareButton.isEnabled = true
                 return
             }
-            
-            self?.navigationController?.popViewController(animated: true)
+
+            guard let data = document?.data(),
+                  let profileData = data["profile"] as? [String: Any] else {
+                print("No profile data found")
+                self.shareButton.isEnabled = true
+                return
+            }
+
+            // Extract username from the profile
+            let username = profileData["name"] as? String ?? "Unknown User"
+
+            // Create the post data dictionary
+            let postData: [String: Any] = [
+                "imageUrl": imageUrl,
+                "caption": caption,
+                "likes": 0,
+                "likedBy": [],
+                "comments": [],
+                "timestamp": FieldValue.serverTimestamp(),
+                "username": username // Add the username from the profile
+                
+            ]
+
+            // Save the post to Firestore
+            self.db.collection("posts").addDocument(data: postData) { error in
+                if let error = error {
+                    print("Error saving post: \(error)")
+                    self.shareButton.isEnabled = true
+                    return
+                }
+
+                // Navigate back and re-enable the share button
+                self.shareButton.isEnabled = true
+                self.navigationController?.popViewController(animated: true)
+            }
         }
     }
+
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[.originalImage] as? UIImage {

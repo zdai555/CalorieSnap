@@ -7,11 +7,12 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class PostDetailsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var post: Post?
-    var comments: [String] = []
+    var comments: [[String: String]] = []
     let db = Firestore.firestore()
     
     let postImageView = UIImageView()
@@ -114,44 +115,119 @@ class PostDetailsViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func loadComments() {
-        guard let post = post else { return }
-        
+        guard let post = post else {
+            print("Error: No post data available.")
+            return
+        }
+
         db.collection("posts").document(post.id).getDocument { [weak self] document, error in
             if let error = error {
-                print("Error fetching comments: \(error)")
+                print("Error fetching comments: \(error.localizedDescription)")
                 return
             }
-            
-            guard let data = document?.data() else { return }
-            self?.comments = data["comments"] as? [String] ?? []
-            self?.tableView.reloadData()
+
+            guard let document = document, document.exists else {
+                print("Error: Document does not exist.")
+                return
+            }
+
+            guard let data = document.data(),
+                  let fetchedComments = data["comments"] as? [Any] else { // Accept mixed types in the array
+                print("Error: 'comments' field is missing or invalid.")
+                self?.comments = []
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+                return
+            }
+
+            // Process each comment and normalize the data
+            var normalizedComments: [[String: String]] = []
+            for item in fetchedComments {
+                if let commentDict = item as? [String: String],
+                   let commentText = commentDict["commentText"],
+                   let username = commentDict["username"] {
+                    normalizedComments.append(["commentText": commentText, "username": username])
+                } else if let commentText = item as? String { // Handle plain string comments
+                    normalizedComments.append(["commentText": commentText, "username": "Unknown"])
+                }
+            }
+
+            // Update local comments array and reload the table view
+            self?.comments = normalizedComments
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
         }
     }
-    
-    @objc func sendCommentTapped() {
-        guard let post = post, let commentText = commentField.text, !commentText.isEmpty else { return }
+
         
-        db.collection("posts").document(post.id).updateData([
-            "comments": FieldValue.arrayUnion([commentText])
-        ]) { [weak self] error in
-            if let error = error {
-                print("Error adding comment: \(error)")
-                return
+        @objc func sendCommentTapped() {
+            guard let post = post,
+                  let commentText = commentField.text, !commentText.isEmpty,
+                  let currentUserId = Auth.auth().currentUser?.uid else { return }
+
+            // Fetch the username of the current user
+            db.collection("users").document(currentUserId).getDocument { [weak self] document, error in
+                if let error = error {
+                    print("Error fetching username: \(error)")
+                    return
+                }
+
+                guard let data = document?.data(),
+                      let profileData = data["profile"] as? [String: Any] else {
+                    print("No profile data found")
+                 
+                    return
+                }
+
+                // Extract username from the profile
+                let username = profileData["name"] as? String ?? "Unknown User"
+
+
+                let newComment: [String: String] = ["username": username, "commentText": commentText]
+
+                
+                let postRef = self?.db.collection("posts").document(post.id)
+                        postRef?.updateData([
+                            "comments": FieldValue.arrayUnion([newComment]) // Append new comment to Firestore
+                        ]) { error in
+                            if let error = error {
+                                print("Error adding comment: \(error)")
+                                return
+                            }
+
+                            print("Comment added successfully.")
+
+
+                    // Update local comments array and reload the table
+                    self?.post?.comments.append(newComment) // Synchronize the local post object
+                    self?.comments.append(newComment)
+                
+                   
+                    DispatchQueue.main.async {
+                        self?.tableView.reloadData() // Reload the table view to display the new comment
+                    }
+                    
+                   
+                }
             }
-            
-            self?.comments.append(commentText)
-            self?.tableView.reloadData()
-            self?.commentField.text = ""
         }
-    }
+
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return comments.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath)
-        cell.textLabel?.text = comments[indexPath.row]
-        return cell
-    }
-}
+          return comments.count
+      }
+
+      func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+          let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath)
+          let comment = comments[indexPath.row]
+          let username = comment["username"] ?? "Unknown User"
+          let commentText = comment["commentText"] ?? ""
+          
+          cell.textLabel?.text = "\(username): \(commentText)"
+          cell.textLabel?.numberOfLines = 0
+          return cell
+      }
+
+  }

@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class CommunityViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -86,16 +87,51 @@ class CommunityViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     func updateLikes(for post: Post) {
-        guard let index = posts.firstIndex(where: { $0.id == post.id }) else { return }
-        posts[index].likes += 1 // Update local data
-        db.collection("posts").document(post.id).updateData(["likes": post.likes]) { error in
+        guard let currentUserId = Auth.auth().currentUser?.uid else {
+            print("Error: User not logged in.")
+            return
+        }
+
+        let postRef = db.collection("posts").document(post.id)
+
+        // Fetch the current post data
+        postRef.getDocument { [weak self] document, error in
             if let error = error {
-                print("Error updating likes: \(error)")
-            } else {
-                DispatchQueue.main.async {
-                    self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                print("Error fetching post: \(error)")
+                return
+            }
+
+            guard let data = document?.data(),
+                  let likedBy = data["likedBy"] as? [String] else {
+                print("Error: Missing likedBy field.")
+                return
+            }
+
+            // Check if the current user has already liked the post
+            if likedBy.contains(currentUserId) {
+                print("User has already liked this post.")
+                return
+            }
+
+            // Increment likes and update likedBy array
+            let updatedLikes = (data["likes"] as? Int ?? 0) + 1
+            postRef.updateData([
+                "likes": updatedLikes,
+                "likedBy": FieldValue.arrayUnion([currentUserId]) // Add user ID to likedBy array
+            ]) { error in
+                if let error = error {
+                    print("Error updating likes: \(error)")
+                    return
+                }
+
+                print("Likes updated successfully.")
+                // Update local UI (optional)
+                if let index = self?.posts.firstIndex(where: { $0.id == post.id }) {
+                    self?.posts[index].likes = updatedLikes
+                    DispatchQueue.main.async {
+                        self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                    }
                 }
             }
         }
-    }
-}
+    }}

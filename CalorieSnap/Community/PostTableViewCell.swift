@@ -17,6 +17,8 @@ class PostTableViewCell: UITableViewCell {
     var likeButtonAction: (() -> Void)?
     var commentButtonAction: (() -> Void)?
     
+    let usernameLabel = UILabel() // New label for the username
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -27,6 +29,13 @@ class PostTableViewCell: UITableViewCell {
     }
     
     func setupViews() {
+        
+        usernameLabel.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        usernameLabel.textColor = .darkGray
+        usernameLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(usernameLabel)
+               
+        
         postImageView.contentMode = .scaleAspectFill
         postImageView.clipsToBounds = true
         postImageView.layer.cornerRadius = 8
@@ -51,10 +60,16 @@ class PostTableViewCell: UITableViewCell {
         contentView.addSubview(commentButton)
         
         NSLayoutConstraint.activate([
-            postImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            
+            usernameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            usernameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            usernameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+                       
+            postImageView.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 8),
             postImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
             postImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             postImageView.heightAnchor.constraint(equalToConstant: 200),
+                        
             
             captionLabel.topAnchor.constraint(equalTo: postImageView.bottomAnchor, constant: 8),
             captionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
@@ -71,6 +86,8 @@ class PostTableViewCell: UITableViewCell {
     }
     
     func configure(with post: Post) {
+        usernameLabel.text = post.username
+        
         if let url = URL(string: post.imageUrl) {
             postImageView.image = nil // Clear previous image
             loadImage(from: url)
