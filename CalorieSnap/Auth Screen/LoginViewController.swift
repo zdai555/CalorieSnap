@@ -1,6 +1,6 @@
 //
 //  LoginViewController.swift
-//  WA8_<25>
+//  CalorieSnap
 //
 //  Created by Zewei Dai on 11/12/24.
 //
@@ -9,7 +9,7 @@ import UIKit
 import FirebaseAuth
 
 class LoginViewController: UIViewController {
-
+    var logoImageView: UIImageView!
     var scrollView: UIScrollView!
     var contentView: UIView!
     var emailTextField: UITextField!
@@ -29,6 +29,12 @@ class LoginViewController: UIViewController {
         contentView = UIView()
         contentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentView)
+        
+        logoImageView = UIImageView()
+        logoImageView.image = UIImage(named: "caloriesnap_logo")
+        logoImageView.contentMode = .scaleAspectFit
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(logoImageView)
         
         emailTextField = UITextField()
         emailTextField.placeholder = "Email"
@@ -80,7 +86,14 @@ class LoginViewController: UIViewController {
         ])
         
         NSLayoutConstraint.activate([
-            emailTextField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 100),
+            logoImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 50),
+            logoImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            logoImageView.widthAnchor.constraint(equalToConstant: 150),
+            logoImageView.heightAnchor.constraint(equalToConstant: 150)
+        ])
+        
+        NSLayoutConstraint.activate([
+            emailTextField.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 20),
             emailTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             emailTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             emailTextField.heightAnchor.constraint(equalToConstant: 40)
@@ -105,7 +118,7 @@ class LoginViewController: UIViewController {
             registerButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             registerButton.heightAnchor.constraint(equalToConstant: 50),
             registerButton.widthAnchor.constraint(equalToConstant: 200),
-            registerButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20) 
+            registerButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
     }
 

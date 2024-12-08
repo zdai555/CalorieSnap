@@ -30,7 +30,7 @@ class CommunityViewController: UIViewController, UITableViewDelegate, UITableVie
     func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: "PostCell") // Ensure PostTableViewCell is correctly defined
+        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: "PostCell")
         tableView.frame = view.bounds
         view.addSubview(tableView)
     }
@@ -81,7 +81,7 @@ class CommunityViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func navigateToPostDetails(for post: Post) {
         let postDetailsVC = PostDetailsViewController()
-        postDetailsVC.post = post // Pass the selected post to the PostDetailsViewController
+        postDetailsVC.post = post
         navigationController?.pushViewController(postDetailsVC, animated: true)
     }
     
@@ -94,7 +94,6 @@ class CommunityViewController: UIViewController, UITableViewDelegate, UITableVie
 
         let postRef = db.collection("posts").document(post.id)
 
-        // Fetch the current post data
         postRef.getDocument { [weak self] document, error in
             if let error = error {
                 print("Error fetching post: \(error)")
@@ -107,17 +106,15 @@ class CommunityViewController: UIViewController, UITableViewDelegate, UITableVie
                 return
             }
 
-            // Check if the current user has already liked the post
             if likedBy.contains(currentUserId) {
                 print("User has already liked this post.")
                 return
             }
 
-            // Increment likes and update likedBy array
             let updatedLikes = (data["likes"] as? Int ?? 0) + 1
             postRef.updateData([
                 "likes": updatedLikes,
-                "likedBy": FieldValue.arrayUnion([currentUserId]) // Add user ID to likedBy array
+                "likedBy": FieldValue.arrayUnion([currentUserId])
             ]) { error in
                 if let error = error {
                     print("Error updating likes: \(error)")
@@ -125,7 +122,6 @@ class CommunityViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
 
                 print("Likes updated successfully.")
-                // Update local UI (optional)
                 if let index = self?.posts.firstIndex(where: { $0.id == post.id }) {
                     self?.posts[index].likes = updatedLikes
                     DispatchQueue.main.async {

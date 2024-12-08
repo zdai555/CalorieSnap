@@ -52,6 +52,7 @@ class EditRecordViewController: UIViewController {
     private func prefillRecordData() {
         editRecordView.textFieldName.text = record.name
         editRecordView.textFieldCalorie.text = "\(record.calorie)"
+        editRecordView.textFieldDate.text = record.date
         editRecordView.textFieldDetails.text = record.details
 
         if let photoURLString = record.photoURL, let photoURL = URL(string: photoURLString) {
@@ -93,15 +94,16 @@ class EditRecordViewController: UIViewController {
     @objc private func saveButtonTapped() {
         guard let name = editRecordView.textFieldName.text, !name.isEmpty,
               let calorieString = editRecordView.textFieldCalorie.text, let calorie = Int(calorieString),
+              let date = editRecordView.textFieldDate.text, !date.isEmpty,
               let details = editRecordView.textFieldDetails.text else {
-            print("All fields are required")
+            self.showAlert(message: "Please enter all fields.")
             return
         }
 
         if let image = selectedImage {
             uploadPhoto(image: image) { [weak self] photoURL in
                 guard let self = self else { return }
-                self.updateRecordInFirestore(name: name, calorie: calorie, details: details, photoURL: photoURL)
+                self.updateRecordInFirestore(name: name, calorie: calorie, date: date, details: details, photoURL: photoURL)
 
                 DispatchQueue.main.async {
                     if let updatedImage = self.selectedImage {
@@ -110,7 +112,7 @@ class EditRecordViewController: UIViewController {
                 }
             }
         } else {
-            updateRecordInFirestore(name: name, calorie: calorie, details: details, photoURL: record.photoURL)
+            updateRecordInFirestore(name: name, calorie: calorie, date: date, details: details, photoURL: record.photoURL)
         }
     }
 
@@ -143,15 +145,23 @@ class EditRecordViewController: UIViewController {
             }
         }
     }
+    
+    func showAlert(message: String) {
+        let alertController = UIAlertController(title: "Invalid Input", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
 
 
     
-    private func updateRecordInFirestore(name: String, calorie: Int, details: String, photoURL: String?) {
+    private func updateRecordInFirestore(name: String, calorie: Int, date: String, details: String, photoURL: String?) {
         let updatedRecord = Record(
             id: record.id,
             userId: currentUserId,
             name: name,
             calorie: calorie,
+            date: date,
             details: details,
             photoURL: photoURL,
             timestamp: record.timestamp
@@ -244,11 +254,9 @@ extension EditRecordViewController: PHPickerViewControllerDelegate {
                 DispatchQueue.main.async {
                     self.selectedImage = image
                     self.editRecordView.buttonTakePhoto.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
-                    self.editRecordView.buttonTakePhoto.setNeedsDisplay() 
+                    self.editRecordView.buttonTakePhoto.setNeedsDisplay()
                 }
             }
         }
     }
 }
-
-

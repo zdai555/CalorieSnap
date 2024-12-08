@@ -41,7 +41,7 @@ class CreateProfileView: UIView {
     }
 
     private func setupUI() {
-        labelName.text = "Name"
+        labelName.text = "Display Name"
         labelName.translatesAutoresizingMaskIntoConstraints = false
         addSubview(labelName)
         

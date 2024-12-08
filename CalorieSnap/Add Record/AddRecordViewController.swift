@@ -45,19 +45,27 @@ class AddRecordViewController: UIViewController {
     @objc private func saveRecordTapped() {
         guard let name = addRecordView.textFieldName.text, !name.isEmpty,
               let calorieString = addRecordView.textFieldCalorie.text, let calorie = Int(calorieString),
+              let date = addRecordView.textFieldDate.text,
               let details = addRecordView.textFieldDetails.text else {
-            print("All fields are required")
+            self.showAlert(message: "Please enter all fields.")
             return
         }
 
         if let image = selectedImage {
             uploadPhoto(image: image) { [weak self] photoURL in
                 guard let self = self else { return }
-                self.saveRecordToFirestore(name: name, calorie: calorie, details: details, photoURL: photoURL)
+                self.saveRecordToFirestore(name: name, calorie: calorie, date: date, details: details, photoURL: photoURL)
             }
         } else {
-            saveRecordToFirestore(name: name, calorie: calorie, details: details, photoURL: nil)
+            saveRecordToFirestore(name: name, calorie: calorie, date: date, details: details, photoURL: nil)
         }
+    }
+    
+    func showAlert(message: String) {
+        let alertController = UIAlertController(title: "Invalid Input", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
     }
 
     func getMenuImagePicker() -> UIMenu{
@@ -127,12 +135,12 @@ class AddRecordViewController: UIViewController {
         }
     }
 
-
-    private func saveRecordToFirestore(name: String, calorie: Int, details: String, photoURL: URL?) {
+    private func saveRecordToFirestore(name: String, calorie: Int, date: String, details: String, photoURL: URL?) {
         let newRecord = Record(
             userId: currentUserId,
             name: name,
             calorie: calorie,
+            date: date,
             details: details,
             photoURL: photoURL?.absoluteString,
             timestamp: Timestamp()

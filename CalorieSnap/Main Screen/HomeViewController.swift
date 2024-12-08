@@ -1,6 +1,6 @@
 //
 //  ContactsTableViewCell.swift
-//  WA7_poon_4427
+//  CalorieSnap
 //
 //  Created by Steph on 2/11/2024.
 //
@@ -25,7 +25,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .white
-        title = "My Records"
+        title = "My Food Records"
         
         setupTableView()
         setupBottomNavigationView()

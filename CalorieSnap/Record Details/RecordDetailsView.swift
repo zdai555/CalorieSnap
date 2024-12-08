@@ -11,6 +11,7 @@ class RecordDetailsView: UIView {
     var imageRecord: UIImageView!
     var labelName: UILabel!
     var labelCalories: UILabel!
+    var labelDate: UILabel!
     var labelDetails: UILabel!
 
     override init(frame: CGRect) {
@@ -19,6 +20,7 @@ class RecordDetailsView: UIView {
         setupImageRecord()
         setupLabelName()
         setupLabelCalories()
+        setupLabelDate()
         setupLabelDetails()
         initConstraints()
     }
@@ -48,6 +50,16 @@ class RecordDetailsView: UIView {
         labelCalories.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(labelCalories)
     }
+    
+    func setupLabelDate() {
+        labelDate = UILabel()
+        labelDate.font = UIFont.systemFont(ofSize: 16)
+        labelDate.textColor = .darkGray
+        labelDate.numberOfLines = 0
+        labelDate.textAlignment = .center
+        labelDate.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(labelDate)
+    }
 
     func setupLabelDetails() {
         labelDetails = UILabel()
@@ -71,8 +83,11 @@ class RecordDetailsView: UIView {
 
             labelCalories.topAnchor.constraint(equalTo: labelName.bottomAnchor, constant: 10),
             labelCalories.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            
+            labelDate.topAnchor.constraint(equalTo: labelCalories.bottomAnchor, constant: 10),
+            labelDate.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
 
-            labelDetails.topAnchor.constraint(equalTo: labelCalories.bottomAnchor, constant: 10),
+            labelDetails.topAnchor.constraint(equalTo: labelDate.bottomAnchor, constant: 10),
             labelDetails.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             labelDetails.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20)
         ])

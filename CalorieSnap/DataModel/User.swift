@@ -1,6 +1,6 @@
 //
 //  User.swift
-//  WA8_<25>
+//  CalorieSnap
 //
 //  Created by Steph on 13/11/2024.
 //

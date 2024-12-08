@@ -13,15 +13,17 @@ struct Record: Codable, Identifiable {
     var userId: String
     var name: String
     var calorie: Int
+    var date: String
     var details: String
     var photoURL: String?
-    var timestamp: Timestamp         
+    var timestamp: Timestamp
     
-    init(id: String? = nil, userId: String, name: String, calorie: Int, details: String, photoURL: String? = nil, timestamp: Timestamp = Timestamp()) {
+    init(id: String? = nil, userId: String, name: String, calorie: Int, date: String, details: String, photoURL: String? = nil, timestamp: Timestamp = Timestamp()) {
         self.id = id
         self.userId = userId
         self.name = name
         self.calorie = calorie
+        self.date = date
         self.details = details
         self.photoURL = photoURL
         self.timestamp = timestamp
@@ -34,6 +36,7 @@ extension Record {
             "userId": userId,
             "name": name,
             "calorie": calorie,
+            "date": date,
             "details": details,
             "photoURL": photoURL ?? "",
             "timestamp": timestamp

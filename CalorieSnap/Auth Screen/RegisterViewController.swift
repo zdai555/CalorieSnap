@@ -1,6 +1,6 @@
 //
 //  RegisterViewController.swift
-//  WA8_<25>
+//  CalorieSnap
 //
 //  Created by Zewei Dai on 11/12/24.
 //
@@ -10,7 +10,7 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class RegisterViewController: UIViewController {
-
+    var logoImageView: UIImageView!
     var scrollView: UIScrollView!
     var contentView: UIView!
     var nameTextField: UITextField!
@@ -31,6 +31,12 @@ class RegisterViewController: UIViewController {
         contentView = UIView()
         contentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentView)
+        
+        logoImageView = UIImageView()
+        logoImageView.image = UIImage(named: "caloriesnap_logo")
+        logoImageView.contentMode = .scaleAspectFit
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(logoImageView)
 
         nameTextField = UITextField()
         nameTextField.placeholder = "Name"
@@ -89,9 +95,16 @@ class RegisterViewController: UIViewController {
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
+        
+        NSLayoutConstraint.activate([
+            logoImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 50),
+            logoImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            logoImageView.widthAnchor.constraint(equalToConstant: 150),
+            logoImageView.heightAnchor.constraint(equalToConstant: 150)
+        ])
 
         NSLayoutConstraint.activate([
-            nameTextField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 100),
+            nameTextField.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 20),
             nameTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             nameTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             nameTextField.heightAnchor.constraint(equalToConstant: 40)

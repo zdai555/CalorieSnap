@@ -108,15 +108,15 @@ class CreateProfileViewController: UIViewController {
     }
 
     @objc private func saveProfile() {
-        guard let name = createProfileView.textFieldName.text,
-              let ageString = createProfileView.textFieldAge.text,
+        guard let name = createProfileView.textFieldName.text, !name.isEmpty,
+              let ageString = createProfileView.textFieldAge.text, !ageString.isEmpty,
               let age = Int(ageString),
-              let calorieString = createProfileView.textFieldCalorieTarget.text,
+              let calorieString = createProfileView.textFieldCalorieTarget.text, !calorieString.isEmpty,
               let calorie = Int(calorieString),
-              let favoriteFood = createProfileView.textFieldFavoriteFood.text,
+              let favoriteFood = createProfileView.textFieldFavoriteFood.text, !favoriteFood.isEmpty,
               let gender = createProfileView.textFieldGender.text, !gender.isEmpty,
               let pronouns = createProfileView.textFieldPronouns.text, !pronouns.isEmpty else {
-            print("All fields are required")
+            self.showAlert(message: "Please enter all fields.")
             return
         }
 
@@ -128,6 +128,13 @@ class CreateProfileViewController: UIViewController {
         } else {
             saveProfileToFirestore(name: name, age: age, gender: gender, pronouns: pronouns, calorie: calorie, favoriteFood: favoriteFood, photoURL: nil)
         }
+    }
+    
+    func showAlert(message: String) {
+        let alertController = UIAlertController(title: "Invalid Input", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
     }
 
     private func saveProfileToFirestore(name: String, age: Int, gender: String, pronouns: String, calorie: Int, favoriteFood: String, photoURL: URL?) {
@@ -183,4 +190,3 @@ extension CreateProfileViewController: UIImagePickerControllerDelegate, UINaviga
         }
     }
 }
-

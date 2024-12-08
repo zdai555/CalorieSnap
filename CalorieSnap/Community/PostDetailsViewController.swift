@@ -132,7 +132,7 @@ class PostDetailsViewController: UIViewController, UITableViewDelegate, UITableV
             }
 
             guard let data = document.data(),
-                  let fetchedComments = data["comments"] as? [Any] else { // Accept mixed types in the array
+                  let fetchedComments = data["comments"] as? [Any] else {
                 print("Error: 'comments' field is missing or invalid.")
                 self?.comments = []
                 DispatchQueue.main.async {
@@ -141,19 +141,17 @@ class PostDetailsViewController: UIViewController, UITableViewDelegate, UITableV
                 return
             }
 
-            // Process each comment and normalize the data
             var normalizedComments: [[String: String]] = []
             for item in fetchedComments {
                 if let commentDict = item as? [String: String],
                    let commentText = commentDict["commentText"],
                    let username = commentDict["username"] {
                     normalizedComments.append(["commentText": commentText, "username": username])
-                } else if let commentText = item as? String { // Handle plain string comments
+                } else if let commentText = item as? String {
                     normalizedComments.append(["commentText": commentText, "username": "Unknown"])
                 }
             }
 
-            // Update local comments array and reload the table view
             self?.comments = normalizedComments
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
@@ -167,7 +165,6 @@ class PostDetailsViewController: UIViewController, UITableViewDelegate, UITableV
                   let commentText = commentField.text, !commentText.isEmpty,
                   let currentUserId = Auth.auth().currentUser?.uid else { return }
 
-            // Fetch the username of the current user
             db.collection("users").document(currentUserId).getDocument { [weak self] document, error in
                 if let error = error {
                     print("Error fetching username: \(error)")
@@ -181,7 +178,6 @@ class PostDetailsViewController: UIViewController, UITableViewDelegate, UITableV
                     return
                 }
 
-                // Extract username from the profile
                 let username = profileData["name"] as? String ?? "Unknown User"
 
 
@@ -189,28 +185,26 @@ class PostDetailsViewController: UIViewController, UITableViewDelegate, UITableV
 
                 
                 let postRef = self?.db.collection("posts").document(post.id)
-                        postRef?.updateData([
-                            "comments": FieldValue.arrayUnion([newComment]) // Append new comment to Firestore
-                        ]) { error in
-                            if let error = error {
-                                print("Error adding comment: \(error)")
-                                return
-                            }
-
-                            print("Comment added successfully.")
-
-
-                    // Update local comments array and reload the table
-                    self?.post?.comments.append(newComment) // Synchronize the local post object
-                    self?.comments.append(newComment)
-                
-                   
-                    DispatchQueue.main.async {
-                        self?.tableView.reloadData() // Reload the table view to display the new comment
+                postRef?.updateData([
+                    "comments": FieldValue.arrayUnion([newComment])
+                ]) { error in
+                    if let error = error {
+                        print("Error adding comment: \(error)")
+                        return
                     }
+
+                    print("Comment added successfully.")
+
+                    self?.post?.comments.append(newComment)
+                    self?.comments.append(newComment)
                     
-                   
+                    DispatchQueue.main.async {
+                        self?.tableView.reloadData()
+                        self?.commentField.text = ""
+                        self?.commentField.resignFirstResponder()
+                    }
                 }
+                   
             }
         }
 

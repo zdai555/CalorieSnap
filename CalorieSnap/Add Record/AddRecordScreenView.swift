@@ -13,6 +13,8 @@ class AddRecordScreenView: UIView {
     var textFieldName: UITextField!
     var labelCalorie: UILabel!
     var textFieldCalorie: UITextField!
+    var labelDate: UILabel!
+    var textFieldDate: UITextField!
     var labelDetails: UILabel!
     var textFieldDetails: UITextField!
     var buttonTakePhoto: UIButton!
@@ -25,6 +27,8 @@ class AddRecordScreenView: UIView {
         setupTextFieldName()
         setupLabelCalorie()
         setupTextFieldCalorie()
+        setupLabelDate()
+        setupTextFieldDate()
         setupLabelDetails()
         setupTextFieldDetails()
         setupbuttonTakePhoto()
@@ -67,6 +71,22 @@ class AddRecordScreenView: UIView {
         self.addSubview(textFieldCalorie)
     }
     
+    func setupLabelDate() {
+        labelDate = UILabel()
+        labelDate.text = "Date"
+        labelDate.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        labelDate.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(labelDate)
+    }
+    
+    func setupTextFieldDate() {
+        textFieldDate = UITextField()
+        textFieldDate.placeholder = "Enter Date (MM/DD/YY)"
+        textFieldDate.borderStyle = .roundedRect
+        textFieldDate.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(textFieldDate)
+    }
+
     func setupLabelDetails() {
         labelDetails = UILabel()
         labelDetails.text = "Details"
@@ -131,7 +151,15 @@ class AddRecordScreenView: UIView {
             textFieldCalorie.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             textFieldCalorie.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             
-            labelDetails.topAnchor.constraint(equalTo: textFieldCalorie.bottomAnchor, constant: 16),
+            labelDate.topAnchor.constraint(equalTo: textFieldCalorie.bottomAnchor, constant: 16),
+            labelDate.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            labelDate.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            
+            textFieldDate.topAnchor.constraint(equalTo: labelDate.bottomAnchor, constant: 8),
+            textFieldDate.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            textFieldDate.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            
+            labelDetails.topAnchor.constraint(equalTo: textFieldDate.bottomAnchor, constant: 16),
             labelDetails.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             labelDetails.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             

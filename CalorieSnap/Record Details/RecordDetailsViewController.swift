@@ -51,10 +51,11 @@ class RecordDetailsViewController: UIViewController {
     private func populateDetails() {
         detailsView.labelName.text = "Name: \(record.name)"
         detailsView.labelCalories.text = "Calories: \(record.calorie) kcal"
+        detailsView.labelDate.text = "Date: \(record.date)"
         detailsView.labelDetails.text = "Details: \(record.details)"
 
         if let photoURLString = record.photoURL, let photoURL = URL(string: photoURLString) {
-            detailsView.imageRecord.loadRemoteImage(from: photoURL) 
+            detailsView.imageRecord.loadRemoteImage(from: photoURL)
         } else {
             detailsView.imageRecord.image = UIImage(systemName: "photo")
         }

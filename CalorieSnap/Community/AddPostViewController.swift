@@ -14,6 +14,7 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     let imageView = UIImageView()
     let captionField = UITextField()
+    let labelTitle = UILabel()
     let shareButton = UIButton()
     let storage = Storage.storage()
     let db = Firestore.firestore()
@@ -26,9 +27,15 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func setupViews() {
+        labelTitle.text = "Share your recipe or favorite food!"
+        labelTitle.font = UIFont.systemFont(ofSize: 20, weight: .medium)
+        labelTitle.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(labelTitle)
+        
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.backgroundColor = .lightGray
+        imageView.image = UIImage(systemName: "camera")
+        imageView.tintColor = .lightGray
         imageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(imageView)
         
@@ -52,6 +59,8 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
         view.addSubview(stackView)
         
         NSLayoutConstraint.activate([
+            labelTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            labelTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             imageView.heightAnchor.constraint(equalToConstant: 200),
@@ -91,14 +100,12 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func savePost(imageUrl: String, caption: String) {
-        // Ensure the current user is logged in
         guard let currentUserId = Auth.auth().currentUser?.uid else {
             print("Error: User not logged in.")
             shareButton.isEnabled = true
             return
         }
         
-        // Fetch user profile from Firestore
         db.collection("users").document(currentUserId).getDocument { [weak self] document, error in
             guard let self = self else { return }
             if let error = error {
@@ -114,10 +121,8 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
                 return
             }
 
-            // Extract username from the profile
             let username = profileData["name"] as? String ?? "Unknown User"
 
-            // Create the post data dictionary
             let postData: [String: Any] = [
                 "imageUrl": imageUrl,
                 "caption": caption,
@@ -125,11 +130,10 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
                 "likedBy": [],
                 "comments": [],
                 "timestamp": FieldValue.serverTimestamp(),
-                "username": username // Add the username from the profile
+                "username": username
                 
             ]
 
-            // Save the post to Firestore
             self.db.collection("posts").addDocument(data: postData) { error in
                 if let error = error {
                     print("Error saving post: \(error)")
@@ -137,7 +141,6 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
                     return
                 }
 
-                // Navigate back and re-enable the share button
                 self.shareButton.isEnabled = true
                 self.navigationController?.popViewController(animated: true)
             }

@@ -13,7 +13,7 @@ import PhotosUI
 
 class EditProfileViewController: UIViewController {
     var onProfileUpdated: ((UserProfile) -> Void)?
-    private let editProfileView = CreateProfileView() 
+    private let editProfileView = CreateProfileView()
     private let db = Firestore.firestore()
     private let storage = Storage.storage()
     private var currentUserId: String {
@@ -97,7 +97,8 @@ class EditProfileViewController: UIViewController {
               let pronouns = editProfileView.textFieldPronouns.text, !pronouns.isEmpty,
               let calorieTargetText = editProfileView.textFieldCalorieTarget.text, let targetedCalorieIntake = Int(calorieTargetText),
               let favoriteFood = editProfileView.textFieldFavoriteFood.text, !favoriteFood.isEmpty else {
-            print("All fields are required")
+            self.showAlert(message: "Please enter all fields.")
+            return
             return
         }
 
@@ -109,6 +110,13 @@ class EditProfileViewController: UIViewController {
         } else {
             updateProfile(name: name, age: age, gender: gender, pronouns: pronouns, targetedCalorieIntake: targetedCalorieIntake, favoriteFood: favoriteFood, photoURL: userProfile?.photoURL)
         }
+    }
+    
+    func showAlert(message: String) {
+        let alertController = UIAlertController(title: "Invalid Input", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
     }
 
     private func uploadPhoto(image: UIImage, completion: @escaping (String?) -> Void) {

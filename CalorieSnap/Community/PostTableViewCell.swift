@@ -89,10 +89,10 @@ class PostTableViewCell: UITableViewCell {
         usernameLabel.text = post.username
         
         if let url = URL(string: post.imageUrl) {
-            postImageView.image = nil // Clear previous image
+            postImageView.image = nil
             loadImage(from: url)
         } else {
-            postImageView.image = UIImage(named: "placeholder") // Fallback placeholder
+            postImageView.image = UIImage(named: "placeholder") 
         }
         
         captionLabel.text = post.caption
