@@ -15,6 +15,8 @@ class PostDetailsViewController: UIViewController, UITableViewDelegate, UITableV
     var comments: [[String: String]] = []
     let db = Firestore.firestore()
     
+    let scrollView = UIScrollView()
+    let contentView = UIView()
     let postImageView = UIImageView()
     let captionLabel = UILabel()
     let likesLabel = UILabel()
@@ -32,71 +34,94 @@ class PostDetailsViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func setupViews() {
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(contentView)
+        
         postImageView.contentMode = .scaleAspectFill
         postImageView.clipsToBounds = true
         postImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(postImageView)
+        contentView.addSubview(postImageView)
         
         captionLabel.numberOfLines = 0
         captionLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(captionLabel)
+        contentView.addSubview(captionLabel)
         
         likesLabel.textColor = .gray
         likesLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(likesLabel)
+        contentView.addSubview(likesLabel)
         
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CommentCell")
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
+        contentView.addSubview(tableView)
         
         commentField.placeholder = "Add a comment..."
         commentField.borderStyle = .roundedRect
         commentField.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(commentField)
+        contentView.addSubview(commentField)
         
         sendButton.setTitle("Send", for: .normal)
         sendButton.setTitleColor(.white, for: .normal)
         sendButton.backgroundColor = .systemBlue
         sendButton.addTarget(self, action: #selector(sendCommentTapped), for: .touchUpInside)
         sendButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(sendButton)
+        contentView.addSubview(sendButton)
         
-        NSLayoutConstraint.activate([
-            postImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            postImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            postImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            postImageView.heightAnchor.constraint(equalToConstant: 200),
-            
-            captionLabel.topAnchor.constraint(equalTo: postImageView.bottomAnchor, constant: 8),
-            captionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            captionLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            
-            likesLabel.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 8),
-            likesLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            
-            tableView.topAnchor.constraint(equalTo: likesLabel.bottomAnchor, constant: 8),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: commentField.topAnchor, constant: -8),
-            
-            commentField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            commentField.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            commentField.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -8),
-            commentField.heightAnchor.constraint(equalToConstant: 44),
-            
-            sendButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            sendButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            sendButton.widthAnchor.constraint(equalToConstant: 80),
-            sendButton.heightAnchor.constraint(equalToConstant: 44)
-        ])
+        setupConstraints()
         
         if let post = post {
             loadImage(from: post.imageUrl)
             captionLabel.text = post.caption
             likesLabel.text = "❤️ \(post.likes) likes"
         }
+    }
+    
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            postImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            postImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            postImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            postImageView.heightAnchor.constraint(equalToConstant: 200),
+            
+            captionLabel.topAnchor.constraint(equalTo: postImageView.bottomAnchor, constant: 8),
+            captionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            captionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            
+            likesLabel.topAnchor.constraint(equalTo: captionLabel.bottomAnchor, constant: 8),
+            likesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            
+            tableView.topAnchor.constraint(equalTo: likesLabel.bottomAnchor, constant: 8),
+            tableView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            tableView.heightAnchor.constraint(equalToConstant: 300), 
+            
+            commentField.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 8),
+            commentField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            commentField.trailingAnchor.constraint(equalTo: sendButton.leadingAnchor, constant: -8),
+            commentField.heightAnchor.constraint(equalToConstant: 44),
+            
+            sendButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            sendButton.centerYAnchor.constraint(equalTo: commentField.centerYAnchor),
+            sendButton.widthAnchor.constraint(equalToConstant: 80),
+            sendButton.heightAnchor.constraint(equalToConstant: 44),
+            
+            sendButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
+        ])
     }
     
     func loadImage(from urlString: String) {
@@ -210,18 +235,24 @@ class PostDetailsViewController: UIViewController, UITableViewDelegate, UITableV
 
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-          return comments.count
-      }
+            return comments.count
+        }
 
-      func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-          let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath)
-          let comment = comments[indexPath.row]
-          let username = comment["username"] ?? "Unknown User"
-          let commentText = comment["commentText"] ?? ""
-          
-          cell.textLabel?.text = "\(username): \(commentText)"
-          cell.textLabel?.numberOfLines = 0
-          return cell
-      }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CommentCell", for: indexPath)
+        let comment = comments[indexPath.row]
+        let username = comment["username"] ?? "Unknown User"
+        let commentText = comment["commentText"] ?? ""
+
+        cell.textLabel?.text = "\(username): \(commentText)"
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.textAlignment = .left
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 16)
+        cell.separatorInset = .zero
+        cell.layoutMargins = .zero 
+
+        return cell
+    }
+
 
   }

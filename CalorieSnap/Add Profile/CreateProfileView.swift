@@ -8,6 +8,9 @@
 import UIKit
 
 class CreateProfileView: UIView {
+    let scrollView = UIScrollView()
+    let contentView = UIView()
+    
     let labelName = UILabel()
     let textFieldName = UITextField()
     
@@ -29,7 +32,6 @@ class CreateProfileView: UIView {
     let labelPhoto = UILabel()
     let buttonTakePhoto = UIButton(type: .system)
     
-
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .white
@@ -41,67 +43,73 @@ class CreateProfileView: UIView {
     }
 
     private func setupUI() {
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(scrollView)
+        
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(contentView)
+        
         labelName.text = "Display Name"
         labelName.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(labelName)
+        contentView.addSubview(labelName)
         
         textFieldName.borderStyle = .roundedRect
         textFieldName.placeholder = "Enter name"
         textFieldName.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(textFieldName)
+        contentView.addSubview(textFieldName)
 
         labelAge.text = "Age"
         labelAge.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(labelAge)
+        contentView.addSubview(labelAge)
         
         textFieldAge.borderStyle = .roundedRect
         textFieldAge.placeholder = "Enter age"
         textFieldAge.keyboardType = .numberPad
         textFieldAge.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(textFieldAge)
+        contentView.addSubview(textFieldAge)
 
         labelGender.text = "Gender"
         labelGender.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(labelGender)
+        contentView.addSubview(labelGender)
         
         textFieldGender.borderStyle = .roundedRect
         textFieldGender.placeholder = "Enter gender"
         textFieldGender.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(textFieldGender)
+        contentView.addSubview(textFieldGender)
 
         labelPronouns.text = "Pronouns"
         labelPronouns.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(labelPronouns)
+        contentView.addSubview(labelPronouns)
         
         textFieldPronouns.borderStyle = .roundedRect
         textFieldPronouns.placeholder = "Enter pronouns"
         textFieldPronouns.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(textFieldPronouns)
+        contentView.addSubview(textFieldPronouns)
 
         labelCalorieTarget.text = "Targeted Calorie Intake"
         labelCalorieTarget.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(labelCalorieTarget)
+        contentView.addSubview(labelCalorieTarget)
         
         textFieldCalorieTarget.borderStyle = .roundedRect
         textFieldCalorieTarget.placeholder = "Enter calorie target"
         textFieldCalorieTarget.keyboardType = .numberPad
         textFieldCalorieTarget.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(textFieldCalorieTarget)
+        contentView.addSubview(textFieldCalorieTarget)
 
         labelFavoriteFood.text = "Favorite Food"
         labelFavoriteFood.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(labelFavoriteFood)
+        contentView.addSubview(labelFavoriteFood)
         
         textFieldFavoriteFood.borderStyle = .roundedRect
         textFieldFavoriteFood.placeholder = "Enter favorite food"
         textFieldFavoriteFood.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(textFieldFavoriteFood)
+        contentView.addSubview(textFieldFavoriteFood)
 
         labelPhoto.text = "Profile Photo"
         labelPhoto.textColor = .gray
         labelPhoto.font = labelPhoto.font.withSize(16)
         labelPhoto.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(labelPhoto)
+        contentView.addSubview(labelPhoto)
 
         buttonTakePhoto.setTitle("", for: .normal)
         buttonTakePhoto.contentMode = .scaleAspectFit
@@ -109,73 +117,81 @@ class CreateProfileView: UIView {
         buttonTakePhoto.clipsToBounds = true
         buttonTakePhoto.translatesAutoresizingMaskIntoConstraints = false
         buttonTakePhoto.showsMenuAsPrimaryAction = true
-        
-        addSubview(buttonTakePhoto)
+        contentView.addSubview(buttonTakePhoto)
 
         setupConstraints()
     }
 
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            buttonTakePhoto.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20),
-            buttonTakePhoto.centerXAnchor.constraint(equalTo: centerXAnchor),
+            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            buttonTakePhoto.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+            buttonTakePhoto.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             buttonTakePhoto.widthAnchor.constraint(equalToConstant: 100),
             buttonTakePhoto.heightAnchor.constraint(equalToConstant: 100),
             
             labelPhoto.topAnchor.constraint(equalTo: buttonTakePhoto.bottomAnchor, constant: 8),
-            labelPhoto.centerXAnchor.constraint(equalTo: centerXAnchor),
+            labelPhoto.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             labelName.topAnchor.constraint(equalTo: labelPhoto.bottomAnchor, constant: 8),
-            labelName.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            labelName.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             textFieldName.topAnchor.constraint(equalTo: labelName.bottomAnchor, constant: 8),
-            textFieldName.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            textFieldName.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            textFieldName.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            textFieldName.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             textFieldName.heightAnchor.constraint(equalToConstant: 40),
 
             labelAge.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 20),
-            labelAge.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            labelAge.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             textFieldAge.topAnchor.constraint(equalTo: labelAge.bottomAnchor, constant: 8),
-            textFieldAge.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            textFieldAge.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            textFieldAge.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            textFieldAge.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             textFieldAge.heightAnchor.constraint(equalToConstant: 40),
 
             labelGender.topAnchor.constraint(equalTo: textFieldAge.bottomAnchor, constant: 20),
-            labelGender.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            labelGender.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             textFieldGender.topAnchor.constraint(equalTo: labelGender.bottomAnchor, constant: 8),
-            textFieldGender.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            textFieldGender.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            textFieldGender.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            textFieldGender.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             textFieldGender.heightAnchor.constraint(equalToConstant: 40),
 
             labelPronouns.topAnchor.constraint(equalTo: textFieldGender.bottomAnchor, constant: 20),
-            labelPronouns.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            labelPronouns.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             textFieldPronouns.topAnchor.constraint(equalTo: labelPronouns.bottomAnchor, constant: 8),
-            textFieldPronouns.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            textFieldPronouns.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            textFieldPronouns.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            textFieldPronouns.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             textFieldPronouns.heightAnchor.constraint(equalToConstant: 40),
 
             labelCalorieTarget.topAnchor.constraint(equalTo: textFieldPronouns.bottomAnchor, constant: 20),
-            labelCalorieTarget.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            labelCalorieTarget.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             textFieldCalorieTarget.topAnchor.constraint(equalTo: labelCalorieTarget.bottomAnchor, constant: 8),
-            textFieldCalorieTarget.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            textFieldCalorieTarget.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            textFieldCalorieTarget.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            textFieldCalorieTarget.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             textFieldCalorieTarget.heightAnchor.constraint(equalToConstant: 40),
 
             labelFavoriteFood.topAnchor.constraint(equalTo: textFieldCalorieTarget.bottomAnchor, constant: 20),
-            labelFavoriteFood.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            labelFavoriteFood.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             textFieldFavoriteFood.topAnchor.constraint(equalTo: labelFavoriteFood.bottomAnchor, constant: 8),
-            textFieldFavoriteFood.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            textFieldFavoriteFood.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            textFieldFavoriteFood.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            textFieldFavoriteFood.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             textFieldFavoriteFood.heightAnchor.constraint(equalToConstant: 40),
-
-
-
-
+            
+            textFieldFavoriteFood.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
     }
 }

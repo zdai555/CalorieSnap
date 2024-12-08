@@ -81,7 +81,7 @@ class RecordsTableViewCell: UITableViewCell {
         wrapperCellView.addSubview(labelCalories)
     }
     func initConstraints() {
-        let imagePadding: CGFloat = 12 // Padding for the image
+        let imagePadding: CGFloat = 12 
         
         NSLayoutConstraint.activate([
             wrapperCellView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),

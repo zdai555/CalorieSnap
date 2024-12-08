@@ -17,7 +17,7 @@ class PostTableViewCell: UITableViewCell {
     var likeButtonAction: (() -> Void)?
     var commentButtonAction: (() -> Void)?
     
-    let usernameLabel = UILabel() // New label for the username
+    let usernameLabel = UILabel() 
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

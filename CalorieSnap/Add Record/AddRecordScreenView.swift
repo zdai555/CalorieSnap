@@ -9,6 +9,9 @@ import UIKit
 
 class AddRecordScreenView: UIView {
     
+    var scrollView: UIScrollView!
+    var contentView: UIView!
+    
     var labelName: UILabel!
     var textFieldName: UITextField!
     var labelCalorie: UILabel!
@@ -23,6 +26,8 @@ class AddRecordScreenView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        setupScrollView()
+        setupContentView()
         setupLabelName()
         setupTextFieldName()
         setupLabelCalorie()
@@ -31,7 +36,7 @@ class AddRecordScreenView: UIView {
         setupTextFieldDate()
         setupLabelDetails()
         setupTextFieldDetails()
-        setupbuttonTakePhoto()
+        setupButtonTakePhoto()
         setupLabelPhoto()
         
         initConstraints()
@@ -39,12 +44,24 @@ class AddRecordScreenView: UIView {
         self.backgroundColor = .white
     }
     
+    func setupScrollView() {
+        scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(scrollView)
+    }
+    
+    func setupContentView() {
+        contentView = UIView()
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(contentView)
+    }
+    
     func setupLabelName() {
         labelName = UILabel()
         labelName.text = "Name"
         labelName.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         labelName.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(labelName)
+        contentView.addSubview(labelName)
     }
     
     func setupTextFieldName() {
@@ -52,7 +69,7 @@ class AddRecordScreenView: UIView {
         textFieldName.placeholder = "Enter name"
         textFieldName.borderStyle = .roundedRect
         textFieldName.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(textFieldName)
+        contentView.addSubview(textFieldName)
     }
     
     func setupLabelCalorie() {
@@ -60,7 +77,7 @@ class AddRecordScreenView: UIView {
         labelCalorie.text = "Calories"
         labelCalorie.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         labelCalorie.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(labelCalorie)
+        contentView.addSubview(labelCalorie)
     }
     
     func setupTextFieldCalorie() {
@@ -68,7 +85,7 @@ class AddRecordScreenView: UIView {
         textFieldCalorie.placeholder = "Enter calorie count"
         textFieldCalorie.borderStyle = .roundedRect
         textFieldCalorie.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(textFieldCalorie)
+        contentView.addSubview(textFieldCalorie)
     }
     
     func setupLabelDate() {
@@ -76,7 +93,7 @@ class AddRecordScreenView: UIView {
         labelDate.text = "Date"
         labelDate.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         labelDate.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(labelDate)
+        contentView.addSubview(labelDate)
     }
     
     func setupTextFieldDate() {
@@ -84,7 +101,7 @@ class AddRecordScreenView: UIView {
         textFieldDate.placeholder = "Enter Date (MM/DD/YY)"
         textFieldDate.borderStyle = .roundedRect
         textFieldDate.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(textFieldDate)
+        contentView.addSubview(textFieldDate)
     }
 
     func setupLabelDetails() {
@@ -92,7 +109,7 @@ class AddRecordScreenView: UIView {
         labelDetails.text = "Details"
         labelDetails.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         labelDetails.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(labelDetails)
+        contentView.addSubview(labelDetails)
     }
     
     func setupTextFieldDetails() {
@@ -100,10 +117,10 @@ class AddRecordScreenView: UIView {
         textFieldDetails.placeholder = "Enter details"
         textFieldDetails.borderStyle = .roundedRect
         textFieldDetails.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(textFieldDetails)
+        contentView.addSubview(textFieldDetails)
     }
 
-    func setupbuttonTakePhoto(){
+    func setupButtonTakePhoto(){
         buttonTakePhoto = UIButton(type: .system)
         buttonTakePhoto.setTitle("", for: .normal)
         buttonTakePhoto.setImage(UIImage(systemName: "photo"), for: .normal)
@@ -112,7 +129,7 @@ class AddRecordScreenView: UIView {
         buttonTakePhoto.clipsToBounds = true
         buttonTakePhoto.translatesAutoresizingMaskIntoConstraints = false
         buttonTakePhoto.showsMenuAsPrimaryAction = true
-        self.addSubview(buttonTakePhoto)
+        contentView.addSubview(buttonTakePhoto)
     }
     
     func setupLabelPhoto() {
@@ -121,51 +138,62 @@ class AddRecordScreenView: UIView {
         labelPhoto.translatesAutoresizingMaskIntoConstraints = false
         labelPhoto.textColor = .gray
         labelPhoto.font = labelPhoto.font.withSize(16)
-        self.addSubview(labelPhoto)
+        contentView.addSubview(labelPhoto)
     }
-    
     
     func initConstraints() {
         NSLayoutConstraint.activate([
-            labelName.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 16),
-            labelName.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            labelName.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            scrollView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            labelName.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            labelName.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            labelName.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             textFieldName.topAnchor.constraint(equalTo: labelName.bottomAnchor, constant: 8),
-            textFieldName.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            textFieldName.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            textFieldName.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            textFieldName.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            buttonTakePhoto.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 4),
-            buttonTakePhoto.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            buttonTakePhoto.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 16),
+            buttonTakePhoto.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             buttonTakePhoto.widthAnchor.constraint(equalToConstant: 100),
             buttonTakePhoto.heightAnchor.constraint(equalToConstant: 100),
             
-            labelPhoto.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            labelPhoto.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             labelPhoto.topAnchor.constraint(equalTo: buttonTakePhoto.bottomAnchor, constant: 8),
             
             labelCalorie.topAnchor.constraint(equalTo: labelPhoto.bottomAnchor, constant: 16),
-            labelCalorie.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            labelCalorie.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            labelCalorie.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            labelCalorie.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             textFieldCalorie.topAnchor.constraint(equalTo: labelCalorie.bottomAnchor, constant: 8),
-            textFieldCalorie.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            textFieldCalorie.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            textFieldCalorie.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            textFieldCalorie.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             labelDate.topAnchor.constraint(equalTo: textFieldCalorie.bottomAnchor, constant: 16),
-            labelDate.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            labelDate.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            labelDate.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            labelDate.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             textFieldDate.topAnchor.constraint(equalTo: labelDate.bottomAnchor, constant: 8),
-            textFieldDate.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            textFieldDate.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            textFieldDate.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            textFieldDate.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             labelDetails.topAnchor.constraint(equalTo: textFieldDate.bottomAnchor, constant: 16),
-            labelDetails.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            labelDetails.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            labelDetails.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            labelDetails.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             textFieldDetails.topAnchor.constraint(equalTo: labelDetails.bottomAnchor, constant: 8),
-            textFieldDetails.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            textFieldDetails.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            textFieldDetails.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            textFieldDetails.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            textFieldDetails.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         ])
     }
     

@@ -8,6 +8,9 @@
 import UIKit
 
 class RecordDetailsView: UIView {
+    var scrollView: UIScrollView!
+    var contentView: UIView!
+    
     var imageRecord: UIImageView!
     var labelName: UILabel!
     var labelCalories: UILabel!
@@ -17,12 +20,23 @@ class RecordDetailsView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .white
+        setupScrollView()
         setupImageRecord()
         setupLabelName()
         setupLabelCalories()
         setupLabelDate()
         setupLabelDetails()
         initConstraints()
+    }
+
+    func setupScrollView() {
+        scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(scrollView)
+        
+        contentView = UIView()
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(contentView)
     }
 
     func setupImageRecord() {
@@ -32,7 +46,7 @@ class RecordDetailsView: UIView {
         imageRecord.clipsToBounds = true
         imageRecord.layer.cornerRadius = 8
         imageRecord.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(imageRecord)
+        contentView.addSubview(imageRecord)
     }
 
     func setupLabelName() {
@@ -40,7 +54,7 @@ class RecordDetailsView: UIView {
         labelName.font = UIFont.boldSystemFont(ofSize: 20)
         labelName.textColor = .black
         labelName.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(labelName)
+        contentView.addSubview(labelName)
     }
 
     func setupLabelCalories() {
@@ -48,7 +62,7 @@ class RecordDetailsView: UIView {
         labelCalories.font = UIFont.systemFont(ofSize: 18)
         labelCalories.textColor = .red
         labelCalories.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(labelCalories)
+        contentView.addSubview(labelCalories)
     }
     
     func setupLabelDate() {
@@ -58,7 +72,7 @@ class RecordDetailsView: UIView {
         labelDate.numberOfLines = 0
         labelDate.textAlignment = .center
         labelDate.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(labelDate)
+        contentView.addSubview(labelDate)
     }
 
     func setupLabelDetails() {
@@ -68,28 +82,40 @@ class RecordDetailsView: UIView {
         labelDetails.numberOfLines = 0
         labelDetails.textAlignment = .center
         labelDetails.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(labelDetails)
+        contentView.addSubview(labelDetails)
     }
 
     func initConstraints() {
         NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: self.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+
             imageRecord.widthAnchor.constraint(equalToConstant: 150),
             imageRecord.heightAnchor.constraint(equalToConstant: 150),
-            imageRecord.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
-            imageRecord.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 32),
+            imageRecord.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            imageRecord.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 32),
 
             labelName.topAnchor.constraint(equalTo: imageRecord.bottomAnchor, constant: 20),
-            labelName.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            labelName.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
 
             labelCalories.topAnchor.constraint(equalTo: labelName.bottomAnchor, constant: 10),
-            labelCalories.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            labelCalories.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             labelDate.topAnchor.constraint(equalTo: labelCalories.bottomAnchor, constant: 10),
-            labelDate.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            labelDate.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
 
             labelDetails.topAnchor.constraint(equalTo: labelDate.bottomAnchor, constant: 10),
-            labelDetails.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            labelDetails.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20)
+            labelDetails.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            labelDetails.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            labelDetails.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
     }
 

@@ -12,6 +12,9 @@ import FirebaseAuth
 
 class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
+    let scrollView = UIScrollView()
+    let contentView = UIView()
+    let uploadButton = UIButton()
     let imageView = UIImageView()
     let captionField = UITextField()
     let labelTitle = UILabel()
@@ -27,44 +30,84 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func setupViews() {
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(contentView)
+        
         labelTitle.text = "Share your recipe or favorite food!"
         labelTitle.font = UIFont.systemFont(ofSize: 20, weight: .medium)
         labelTitle.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(labelTitle)
+        contentView.addSubview(labelTitle)
         
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.image = UIImage(systemName: "camera")
         imageView.tintColor = .lightGray
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(imageView)
+        contentView.addSubview(imageView)
         
-        let uploadButton = UIButton()
+        
         uploadButton.setTitle("Upload Picture", for: .normal)
         uploadButton.setTitleColor(.systemBlue, for: .normal)
         uploadButton.addTarget(self, action: #selector(uploadPictureTapped), for: .touchUpInside)
+        uploadButton.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(uploadButton)
         
         captionField.placeholder = "Add a caption..."
         captionField.borderStyle = .roundedRect
+        captionField.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(captionField)
         
         shareButton.setTitle("Share", for: .normal)
         shareButton.setTitleColor(.white, for: .normal)
         shareButton.backgroundColor = .systemBlue
         shareButton.addTarget(self, action: #selector(shareTapped), for: .touchUpInside)
+        shareButton.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(shareButton)
         
-        let stackView = UIStackView(arrangedSubviews: [uploadButton, imageView, captionField, shareButton])
-        stackView.axis = .vertical
-        stackView.spacing = 16
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stackView)
+        setupConstraints()
+    }
+    
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
         
         NSLayoutConstraint.activate([
-            labelTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            labelTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
-            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+            labelTitle.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            labelTitle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 40),
+            
+            imageView.topAnchor.constraint(equalTo: labelTitle.bottomAnchor, constant: 20),
+            imageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             imageView.heightAnchor.constraint(equalToConstant: 200),
-            imageView.widthAnchor.constraint(equalToConstant: 200)
+            imageView.widthAnchor.constraint(equalToConstant: 200),
+            
+            uploadButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20),
+            uploadButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            
+            captionField.topAnchor.constraint(equalTo: uploadButton.bottomAnchor, constant: 20),
+            captionField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            captionField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            captionField.heightAnchor.constraint(equalToConstant: 44),
+            
+            shareButton.topAnchor.constraint(equalTo: captionField.bottomAnchor, constant: 20),
+            shareButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor), 
+            shareButton.widthAnchor.constraint(equalToConstant: 200),
+            shareButton.heightAnchor.constraint(equalToConstant: 44),
+            shareButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -40)
         ])
     }
     
@@ -80,7 +123,7 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
             self.showAlert(message: "Please enter all fields.")
             return
         }
-            
+        
         let imageData = image.jpegData(compressionQuality: 0.8)
         let imageRef = storage.reference().child("post_images/\(UUID().uuidString).jpg")
         
@@ -134,7 +177,6 @@ class AddPostViewController: UIViewController, UIImagePickerControllerDelegate, 
                 "comments": [],
                 "timestamp": FieldValue.serverTimestamp(),
                 "username": username
-                
             ]
 
             self.db.collection("posts").addDocument(data: postData) { error in
